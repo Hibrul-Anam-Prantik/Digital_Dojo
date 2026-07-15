@@ -227,10 +227,6 @@ class CyberRiderGame {
     this.audio = new RiderAudio();
     this.gameState = 'start'; // 'start', 'playing', 'win', 'lose'
     
-    // Canvas sizing configs
-    this.resizeCanvas();
-    window.addEventListener('resize', () => this.resizeCanvas());
-
     // Race configurations
     this.trackLength = 2000; // 2000 meters race
     this.pixelsPerMeter = 12; // Visual scaling distance
@@ -238,6 +234,10 @@ class CyberRiderGame {
     // Lane dimensions
     this.laneHeight = 60;
     this.roadCenterY = 0; // Calculated on resize
+    
+    // Canvas sizing configs
+    this.resizeCanvas();
+    window.addEventListener('resize', () => this.resizeCanvas());
     
     // Timing metrics
     this.lastTime = 0;
@@ -332,7 +332,7 @@ class CyberRiderGame {
     const rect = this.canvas.parentElement.getBoundingClientRect();
     this.canvas.width = rect.width;
     this.canvas.height = rect.width * (9 / 16);
-    this.roadCenterY = this.canvas.height * 0.65;
+    this.roadCenterY = this.canvas.height * 0.70;
   }
 
   generateStars() {
