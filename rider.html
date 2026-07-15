@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="An action-packed neon synthwave motorcycle racing game where you race against a CPU lightcycle across obstacles.">
+  <title>CYBER RIDER // Neon Highway</title>
+  <!-- Google Fonts for retro-gaming theme -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="rider.css">
+</head>
+<body>
+  <div class="cyber-overlay"></div>
+
+  <main class="game-wrapper">
+    <!-- Top HUD Interface -->
+    <header class="hud-header">
+      <div class="hud-item progress-container">
+        <span class="hud-label">RACE PROGRESS</span>
+        <div class="progress-track-wrapper">
+          <!-- Race progress bar -->
+          <div class="progress-bar-bg">
+            <div class="progress-marker player-marker" id="progress-player" style="left: 0%;">
+              <span class="marker-icon">P</span>
+            </div>
+            <div class="progress-marker cpu-marker" id="progress-cpu" style="left: 0%;">
+              <span class="marker-icon">C</span>
+            </div>
+            <div class="finish-line-marker"></div>
+          </div>
+          <span class="distance-text" id="distance-remaining">Distance: 1000m</span>
+        </div>
+      </div>
+
+      <div class="hud-grid">
+        <div class="hud-card speed-card">
+          <span class="hud-label">PLAYER SPEED</span>
+          <span class="hud-value" id="player-speed">0 <span class="unit">KM/H</span></span>
+          <div class="hud-glow cyan-glow"></div>
+        </div>
+        <div class="hud-card speed-card">
+          <span class="hud-label">CPU SPEED</span>
+          <span class="hud-value" id="cpu-speed">0 <span class="unit">KM/H</span></span>
+          <div class="hud-glow red-glow"></div>
+        </div>
+        <div class="hud-card nitro-card">
+          <span class="hud-label">NITRO RESERVE</span>
+          <div class="nitro-meter-outer">
+            <div class="nitro-meter-inner" id="player-nitro" style="width: 0%;"></div>
+          </div>
+          <span class="hud-sub-value" id="nitro-text">0%</span>
+          <div class="hud-glow purple-glow"></div>
+        </div>
+      </div>
+
+      <div class="sound-control">
+        <button id="sound-toggle" class="icon-btn" aria-label="Toggle Sound">
+          <svg id="sound-on-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 4L9.91 6.09L12 8.18M12 17.65L7.83 13.48H4V10.52H7.83L9.91 12.6M16.5 12C16.5 10.23 15.48 8.71 14 7.97V16.02C15.48 15.29 16.5 13.77 16.5 12M14 3.23V5.29C16.89 6.15 19 8.83 19 12C19 15.17 16.89 17.85 14 18.71V20.77C18.01 19.86 21 16.28 21 12C21 7.72 18.01 4.14 14 3.23Z"/>
+          </svg>
+          <svg id="sound-off-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="hidden">
+            <path d="M12 4L9.91 6.09L12 8.18M4.27 3L3 4.27L7.73 9H4v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21L21 19.73l-9-9L4.27 3zM12 9l-1.91-1.91L12 5.18V9zm4.5 3c0-.7-.12-1.37-.34-2L14.7 11.5c.03.17.05.33.05.5 0 .88-.51 1.63-1.25 2v2.24c1.8-.46 3-2.1 3-3.74zM19 12c0 2.21-.86 4.21-2.27 5.73l1.45 1.45C19.85 17.29 21 14.78 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Canvas viewport -->
+    <div class="viewport-wrapper">
+      <div class="crt-lines"></div>
+      <canvas id="game-canvas"></canvas>
+
+      <!-- Screens overlay -->
+      <!-- Start Screen -->
+      <div class="overlay-screen active" id="start-screen">
+        <h1 class="glitch-text" data-text="CYBER RIDER">CYBER RIDER</h1>
+        <p class="tagline">OUTRUN THE NEURAL NET // AVOID OBSTACLES</p>
+        
+        <div class="instructions-panel">
+          <div class="control-key-info">
+            <span class="key-cap">▲ / W</span>
+            <span class="key-cap">▼ / S</span>
+            <span class="control-desc">Change Highway Lanes</span>
+          </div>
+          <div class="control-key-info">
+            <span class="key-cap">SPACEBAR</span>
+            <span class="control-desc">Activate Nitro Speed Boost</span>
+          </div>
+        </div>
+
+        <button class="menu-btn neon-btn" id="start-btn">
+          <span class="btn-text">START_ENGINES</span>
+          <span class="btn-glow"></span>
+        </button>
+      </div>
+
+      <!-- Game Over: Win Screen -->
+      <div class="overlay-screen hidden" id="win-screen">
+        <h1 class="victory-text">RACE WON!</h1>
+        <p class="status-msg">NEURAL NET BYPASSED // CORE RESTORED</p>
+        
+        <div class="stats-panel">
+          <div class="stat-row">
+            <span>RACE TIME:</span>
+            <span id="win-time">00:00.00</span>
+          </div>
+          <div class="stat-row">
+            <span>MAX SPEED:</span>
+            <span id="win-max-speed">0 KM/H</span>
+          </div>
+        </div>
+
+        <button class="menu-btn neon-btn" id="win-restart-btn">
+          <span class="btn-text">RE-RIDE HIGHWAY</span>
+          <span class="btn-glow"></span>
+        </button>
+      </div>
+
+      <!-- Game Over: Lose Screen -->
+      <div class="overlay-screen hidden" id="lose-screen">
+        <h1 class="defeat-text">RACE FAILED</h1>
+        <p class="status-msg">CPU RIDER DOMINATED // CONNECTION LOST</p>
+        
+        <div class="stats-panel">
+          <div class="stat-row">
+            <span>YOUR DISTANCE:</span>
+            <span id="lose-dist">0m / 1000m</span>
+          </div>
+        </div>
+
+        <button class="menu-btn neon-btn" id="lose-restart-btn">
+          <span class="btn-text">INITIALIZE REBOOT</span>
+          <span class="btn-glow"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Foot control guides -->
+    <footer class="game-footer">
+      <div class="guide-item"><span class="highlight">HAZARD:</span> <span class="obstacle-color">BARRIERS [SLOW]</span></div>
+      <div class="guide-item"><span class="highlight">POWERUP:</span> <span class="nitro-color">BATTERY [NITRO]</span></div>
+      <div class="guide-item"><span class="highlight">HINT:</span> Change lanes quickly to avoid obstacles and pick up nitro batteries!</div>
+    </footer>
+  </main>
+
+  <script src="rider.js"></script>
+</body>
+</html>
